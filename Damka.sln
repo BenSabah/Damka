@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DamkaGameEngine", "DamkaGameEngine\DamkaGameEngine.csproj", "{85DAA301-E9B2-4F7C-83C2-6D667A4F105F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsciiDamka", "AsciiDamka\AsciiDamka.csproj", "{6FA84B54-5B84-43A1-BFEB-9DA90D433D8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{85DAA301-E9B2-4F7C-83C2-6D667A4F105F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85DAA301-E9B2-4F7C-83C2-6D667A4F105F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85DAA301-E9B2-4F7C-83C2-6D667A4F105F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FA84B54-5B84-43A1-BFEB-9DA90D433D8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FA84B54-5B84-43A1-BFEB-9DA90D433D8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FA84B54-5B84-43A1-BFEB-9DA90D433D8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FA84B54-5B84-43A1-BFEB-9DA90D433D8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
