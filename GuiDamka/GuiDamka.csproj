@@ -51,7 +51,7 @@
     <Compile Include="MainScreenForm.Designer.cs">
       <DependentUpon>MainScreenForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GuiGame.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainScreenForm.resx">
       <DependentUpon>MainScreenForm.cs</DependentUpon>
