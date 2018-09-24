@@ -6,7 +6,6 @@
         {
             MainScreenForm mSF = new MainScreenForm();
             mSF.ShowDialog();
-            }
         }
     }
-
+}

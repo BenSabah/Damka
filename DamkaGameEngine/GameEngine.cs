@@ -2,19 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Drawing;
     using System.Text;
     using System.Windows.Forms;
-
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
-    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1310:FieldNamesMustNotContainUnderscore", Justification = "Reviewed. Suppression is OK here.")]
-    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1308:VariableNamesMustNotBePrefixed", Justification = "Reviewed. Suppression is OK here.")]
-    [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:ElementsMustAppearInTheCorrectOrder", Justification = "Reviewed. Suppression is OK here.")]
-    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1305:FieldNamesMustNotUseHungarianNotation", Justification = "Reviewed. Suppression is OK here.")]
-    [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1214:StaticReadonlyElementsMustAppearBeforeStaticNonReadonlyElements", Justification = "Reviewed. Suppression is OK here.")]
-    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1311:StaticReadonlyFieldsMustBeginWithUpperCaseLetter", Justification = "Reviewed. Suppression is OK here.")]
-    [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1101:PrefixLocalCallsWithThis", Justification = "Reviewed. Suppression is OK here.")]
 
     public class GameEngine
     {
@@ -155,6 +145,16 @@
             }
         }
 
+        private bool isSkippableIndex(Point i_destination, Point i_origin)
+        {
+            bool isDistTwo = (Math.Abs(i_destination.X - i_origin.X) == 2) && (Math.Abs(i_destination.Y - i_origin.Y) == 2);
+            bool isOpen = this.GetPieceByIndex(i_destination) == DamkaPieces.Type.None;
+            Point p = new Point((i_destination.X + i_origin.X) / 2, (i_destination.Y + i_origin.Y) / 2);
+            bool isSkippable = DamkaPieces.IsEnemyType(this.GetPieceByIndex(p), this.GetPieceByIndex(i_origin));
+
+            return isDistTwo && isOpen && isSkippable;
+        }
+
         private void checkIfKingged(Point i_index)
         {
             DamkaPieces.Type type = this.GetPieceByIndex(i_index);
@@ -245,15 +245,15 @@
 
         public List<Point> GetLandingOptions(Point i_origin)
         {
-            List<Point> landingOptions = this.createAllIndexOptions(i_origin);
+            List<Point> landingOptions = this.createAllPossibleIndexOptions(i_origin);
             landingOptions = this.filterOptionsByBoardSize(landingOptions);
             landingOptions = this.filterOptionsByPieceType(landingOptions, i_origin);
-            landingOptions = this.filterOptionsBySelf(landingOptions, i_origin);
-            landingOptions = this.filterOptionsByEnemies(landingOptions, i_origin);
+            landingOptions = this.filterOptionsByOtherPieces(landingOptions, i_origin);
+            //landingOptions = this.filterOptionsByEnemies(landingOptions, i_origin);
             return landingOptions;
         }
 
-        private List<Point> createAllIndexOptions(Point i_origin)
+        private List<Point> createAllPossibleIndexOptions(Point i_origin)
         {
             List<Point> landingOptions = new List<Point>();
             for (int i = 1; i < this.r_boardSize; i++)
@@ -279,6 +279,11 @@
             return filteredLandingOptions;
         }
 
+        private bool isIndexOnBoard(Point i_index)
+        {
+            return i_index.X >= 0 && i_index.Y >= 0 && i_index.X < this.r_boardSize && i_index.Y < this.r_boardSize;
+        }
+
         private List<Point> filterOptionsByPieceType(List<Point> i_landingOptions, Point i_origin)
         {
             List<Point> filteredLandingOptions = new List<Point>();
@@ -293,13 +298,8 @@
 
         }
 
-        private bool isIndexOnBoard(Point i_index)
-        {
-            return i_index.X >= 0 && i_index.Y >= 0 && i_index.X < this.r_boardSize && i_index.Y < this.r_boardSize;
-        }
-
         private bool isDistanceFitType(Point i_destination, Point i_origin)
-        {   
+        {
             bool isSkippable = (Math.Abs(i_destination.X - i_origin.X) == 1) && (Math.Abs(i_destination.Y - i_origin.Y) == 1);
 
             bool isKing = DamkaPieces.isKing(this.GetPieceByIndex(i_origin));
@@ -307,22 +307,12 @@
             return isKing || isSkippable;
         }
 
-        private bool isSkippableIndex(Point i_destination, Point i_origin)
-        {
-            bool isDistTwo = (Math.Abs(i_destination.X - i_origin.X) == 2) && (Math.Abs(i_destination.Y - i_origin.Y) == 2);
-            bool isOpen = this.GetPieceByIndex(i_destination) == DamkaPieces.Type.None;
-            Point p = new Point((i_destination.X + i_origin.X) / 2, (i_destination.Y + i_origin.Y) / 2);
-            bool isSkippable = DamkaPieces.IsEnemyType(this.GetPieceByIndex(p), this.GetPieceByIndex(i_origin));
-
-            return isDistTwo && isOpen && isSkippable;
-        }
-
-        private List<Point> filterOptionsBySelf(List<Point> i_landingOptions, Point i_origin)
+        private List<Point> filterOptionsByOtherPieces(List<Point> i_landingOptions, Point i_origin)
         {
             List<Point> filteredLandingOptions = new List<Point>();
             foreach (Point option in i_landingOptions)
             {
-                if (!this.isIndexAbstractedBySelf(option, i_origin))
+                if (!this.isIndexAbstractedByOtherPiece(option, i_origin))
                 {
                     filteredLandingOptions.Add(option);
                 }
@@ -330,7 +320,7 @@
             return filteredLandingOptions;
         }
 
-        private bool isIndexAbstractedBySelf(Point i_destination, Point i_origin)
+        private bool isIndexAbstractedByOtherPiece(Point i_destination, Point i_origin)
         {
             int adder = (i_origin.X - i_destination.X > 0) ? -1 : 1;
             int deltaY = i_destination.Y - i_origin.Y;
@@ -341,7 +331,7 @@
             int xHigh = (xLow == i_origin.X) ? i_destination.X : i_origin.X;
             int yOfLow = (xLow == i_destination.X) ? i_destination.Y : i_origin.Y;
 
-            for (int x = i_origin.X + adder; x >= xLow && x <= xHigh; x = x + adder)
+            for (int x = i_origin.X + adder; x >= xLow && x <= xHigh; x += adder)
             {
                 int y = m * (x - xLow) + yOfLow;
                 DamkaPieces.Type tmp = this.GetPieceByIndex(new Point(x, y));

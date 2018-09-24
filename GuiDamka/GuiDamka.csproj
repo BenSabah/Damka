@@ -75,5 +75,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DamkaGameEngine\DamkaGameEngine.csproj">
+      <Project>{85DAA301-E9B2-4F7C-83C2-6D667A4F105F}</Project>
+      <Name>DamkaGameEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
